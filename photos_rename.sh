@@ -1,6 +1,19 @@
 #!/bin/sh
-#rm `ls|head -1`
-first_shot=`ls|head -1|cut -c 5-8`
+photo_path='.'
+dst_path='.'
+if [ $# -ge 1 ]; then
+    dst_path="$1"
+fi
+if [ $# -eq 2 ]; then 
+    photo_path="$2"
+fi
+
+if [ $# -gt 2 ]; then
+    echo "more then 2 arguments"
+    exit 1
+fi
+
+cd $photo_path
 quantity=`ls|wc -l|awk '{print $1}'`
 
 if [ "$quantity" -lt 100 ]; then 
@@ -38,11 +51,7 @@ if [ "$zc" -eq 4 ]; then
       mv img-${i}.jpeg img-0${i}.jpeg
    done
 fi
+cd -
 
-
-#for i in `seq 1 $quantity`; do 
-#   echo mv GOPR`echo $(($((${first_shot}-1))+\`echo ${i}|sed -e 's/^00//g' -e 's/^0//g'\`))`.JPG img-$i.jpeg; 
-#done
-
-ffmpeg -f image2 -i img-%0${zc}d.jpeg -r 12 -vcodec rawvideo -pix_fmt yuv420p -s 1920x1440 output_fullhd.avi
-ffmpeg -f image2 -i img-%0${zc}d.jpeg -r 12 -vcodec rawvideo -pix_fmt yuv420p -s 1280x960 output_hd.avi
+#ffmpeg -f image2 -i img-%0${zc}d.jpeg -r 12 -vcodec rawvideo -pix_fmt yuv420p -s 1920x1440 output_fullhd.avi
+ffmpeg -f image2 -i img-%0${zc}d.jpeg -r 12 -vcodec rawvideo -pix_fmt yuv420p -s 1280x960 ${dst_path}/output_hd.avi
