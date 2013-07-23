@@ -20,7 +20,7 @@ if [ $# -gt 3 ]; then
 fi
 
 quantity=0
-for i in `find $photo_path -type f -iname "*jpg"`; do quantity=$(($quantity +1)); echo $quantity; mv $i $tmp_path/`echo $i|sed -e 's/^.*\///g'`; done
+for i in `find $photo_path -type f -iname "*jpg"`; do quantity=$(($quantity +1)); mv $i $tmp_path/`echo $i|sed -e 's/^.*\///g'`; done
 
 if [ "$quantity" -lt 100 ]; then 
    echo "photos less then 100"; 
