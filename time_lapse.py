@@ -1,10 +1,16 @@
 __author__ = 'onotole'
 import os,re,random,shutil,time
+import argparse
+
+parser = argparse.ArgumentParser(description='Great Description To Be Here')
+
 
 pathSD="/Volumes/NO NAME"
 delayBefore=600  #10 min
 tmpDir="/tmp/.timelapse" + str(random.randint(0,100)) + "/"
 dstPath="~/Desktop/"
+quality='HD' #FullHD
+rate=24
 
 def lookingForSD():
     pathSD=[]
@@ -63,8 +69,12 @@ def preparing(filesToTimeLapse,tmpDir=tmpDir):
     zeroCount=len(str(length))
 
 def convert(tmpDir, dstPath, zeroCount):
-    convertCommand = 'cd '+ tmpDir +'; ffmpeg -f image2 -i img-%0'+ str(zeroCount) + 'd.jpg -r 24 -vcodec rawvideo -pix_fmt yuv420p -s 1280x960 '+\
-                 dstPath + 'OutputVideo' + str(time.time()).split('.')[0] + '.avi'
+    if quality=='FullHD':
+        size='1900x1425'
+    else:
+        size='1280x960'
+    convertCommand = 'cd '+ tmpDir +'; ffmpeg -f image2 -i img-%0'+ str(zeroCount) + 'd.jpg -r ' + str(rate) + \
+        ' -vcodec rawvideo -pix_fmt yuv420p -s ' + size + ' ' + dstPath + 'OutputVideo' + str(time.time()).split('.')[0] + '.avi'
     os.system(convertCommand)
     os.system('rm -rf '+tmpDir)
 
