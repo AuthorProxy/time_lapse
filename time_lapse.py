@@ -37,6 +37,9 @@ def findTimeLapserRaw(path_f):
     return filesToTimeLapse
 
 def preparing(filesToTimeLapse,tmpDir=tmpDir):
+
+    if os.path.getsize(filesToTimeLapse[0])*len(filesToTimeLapse)*1.5 > shutil.disk_usage('/tmp/').free:
+        raise Exception('not enough space')
     #create tmpdir and copy images to it
     if os.path.exists(tmpDir):
         os.removedirs(tmpDir)
