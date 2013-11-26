@@ -6,6 +6,19 @@ delayBefore=600  #10 min
 tmpDir="/tmp/.timelapse" + str(random.randint(0,100)) + "/"
 dstPath="~/Desktop/"
 
+def lookingForSD():
+    pathSD=[]
+    if os.path.exists('/Volumes/'):
+        mountPoint='/Volumes/'
+    else :
+        mountPoint='/media/'
+    for disk in os.listdir(mountPoint):
+        if 'DCIM' in os.listdir(os.path.join(mountPoint,disk)):
+            pathSD.append(os.path.join(mountPoint,disk))
+    if len(pathSD)>1:
+        print ("I found more then one SD")
+    return pathSD[-1]
+
 def normalize(number, measure):
     result=''
     for i in range(len(str(measure))-len(str(number))):
@@ -56,12 +69,7 @@ def convert(tmpDir, dstPath, zeroCount):
     os.system('rm -rf '+tmpDir)
 
 if __name__ == "__main__":
-    pass
-
-path_f=createFileList(pathSD)
-
-filesToTimeLapse=findTimeLapserRaw(path_f)
-
-preparing(filesToTimeLapse,tmpDir)
-
-convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
+    path_f=createFileList(lookingForSD())
+    filesToTimeLapse=findTimeLapserRaw(path_f)
+    preparing(filesToTimeLapse,tmpDir)
+    convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
