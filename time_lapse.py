@@ -32,7 +32,7 @@ def normalize(number, measure):
     result += str(number)
     return result
 
-def createFileList(path=pathSD):
+def createFullFileList(path=pathSD):
     path_f=[]
     for d, dirs, files in os.walk(path):
         for f in files:
@@ -42,18 +42,33 @@ def createFileList(path=pathSD):
     path_f.sort()
     return path_f
 
-def findTimeLapserRaw(path_f):
+def findTimeLapserRaw(path_f, amount = 1):
     oldCreateTime=0.
     for file in path_f:
         createTime = os.path.getctime(file)
         if oldCreateTime > 0 and createTime - oldCreateTime > delayBefore:
             startTimeLapse=file
         if oldCreateTime > 0 and oldCreateTime - createTime > delayBefore:
-            pass #print (createTime, oldCreateTime, file, "smth get wrong")
+            pass  #print (createTime, oldCreateTime, file, "smth get wrong")
         oldCreateTime = createTime
 
     filesToTimeLapse=path_f[path_f.index(startTimeLapse):]
-    return filesToTimeLapse
+    filesToTimeLapses = [filesToTimeLapse[:]]
+    if amount > 1 :
+        filesToTimeLapse=[]
+        previousStartTimeLapse = startTimeLapse
+        oldCreateTime=0.
+        for file in path_f:
+            createTime = os.path.getctime(file)
+            if oldCreateTime > 0 and createTime - oldCreateTime > delayBefore and createTime < os.path.getctime(previousStartTimeLapse):
+                startTimeLapse=file
+            if oldCreateTime > 0 and oldCreateTime - createTime > delayBefore:
+                pass  #print (createTime, oldCreateTime, file, "smth get wrong")
+            oldCreateTime = createTime
+
+        filesToTimeLapse=path_f[path_f.index(startTimeLapse):path_f.index(previousStartTimeLapse)-1]
+        filesToTimeLapses.append(filesToTimeLapse[:])
+    return filesToTimeLapses
 
 def preparing(filesToTimeLapse,tmpDir=tmpDir):
 
@@ -78,8 +93,11 @@ def convert(tmpDir, dstPath, zeroCount):
     os.system(convertCommand)
     os.system('rm -rf '+tmpDir)
 
+
+
 if __name__ == "__main__":
-    path_f=createFileList(lookingForSD())
-    filesToTimeLapse=findTimeLapserRaw(path_f)
-    preparing(filesToTimeLapse,tmpDir)
-    convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
+    path_f=createFullFileList(lookingForSD())
+    filesToTimeLapses=findTimeLapserRaw(path_f,2)
+    for filesToTimeLapse in filesToTimeLapses:
+        preparing(filesToTimeLapse,tmpDir)
+        convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
