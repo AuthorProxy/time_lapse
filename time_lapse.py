@@ -42,7 +42,8 @@ def createFullFileList(path=pathSD):
     path_f.sort()
     return path_f
 
-def findTimeLapserRaw(path_f, amount = 1):
+def findTimeLapserRaw(path_f, src_amount = 1):
+    amount = src_amount
     oldCreateTime=0.
     for file in path_f:
         createTime = os.path.getctime(file)
@@ -54,7 +55,7 @@ def findTimeLapserRaw(path_f, amount = 1):
 
     filesToTimeLapse=path_f[path_f.index(startTimeLapse):]
     filesToTimeLapses = [filesToTimeLapse[:]]
-    if amount > 1 :
+    while amount > 1 :
         filesToTimeLapse=[]
         previousStartTimeLapse = startTimeLapse
         oldCreateTime=0.
@@ -68,6 +69,7 @@ def findTimeLapserRaw(path_f, amount = 1):
 
         filesToTimeLapse=path_f[path_f.index(startTimeLapse):path_f.index(previousStartTimeLapse)-1]
         filesToTimeLapses.append(filesToTimeLapse[:])
+        amount -= 1
     return filesToTimeLapses
 
 def preparing(filesToTimeLapse,tmpDir=tmpDir):
@@ -97,7 +99,7 @@ def convert(tmpDir, dstPath, zeroCount):
 
 if __name__ == "__main__":
     path_f=createFullFileList(lookingForSD())
-    filesToTimeLapses=findTimeLapserRaw(path_f,2)
+    filesToTimeLapses=findTimeLapserRaw(path_f,3)
     for filesToTimeLapse in filesToTimeLapses:
         preparing(filesToTimeLapse,tmpDir)
         convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
