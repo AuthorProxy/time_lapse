@@ -23,7 +23,12 @@ def lookingForSD():
             pathSD.append(os.path.join(mountPoint,disk))
     if len(pathSD)>1:
         print ("I found more then one SD")
-    return pathSD[-1]
+    try:
+        result = pathSD[-1]
+    except IndexError:
+        print("SD not found")
+        exit (1)
+    return result
 
 def normalize(number, measure):
     result=''
@@ -99,7 +104,7 @@ def convert(tmpDir, dstPath, zeroCount):
 
 if __name__ == "__main__":
     path_f=createFullFileList(lookingForSD())
-    filesToTimeLapses=findTimeLapserRaw(path_f,3)
+    filesToTimeLapses=findTimeLapserRaw(path_f,2)
     for filesToTimeLapse in filesToTimeLapses:
         preparing(filesToTimeLapse,tmpDir)
         convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
