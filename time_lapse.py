@@ -10,9 +10,11 @@ delayBefore=600  #10 min
 tmpDir="/tmp/.timelapse" + str(random.randint(0,100)) + "/"
 dstPath="~/Desktop/"
 quality='HD' #FullHD
+customPath="/Users/onotole/yandex.disk/foto/TRIP/bubblecamp_2014/ALL/timelapse/"
 rate=24
 
 def lookingForSD():
+    # что должно быть на выходе?
     pathSD=[]
     if os.path.exists('/Volumes/'):
         mountPoint='/Volumes/'
@@ -52,6 +54,7 @@ def findTimeLapserRaw(path_f, src_amount = 1):
     oldCreateTime=0.
     for file in path_f:
         createTime = os.path.getctime(file)
+        print(createTime, oldCreateTime, delayBefore)
         if oldCreateTime > 0 and createTime - oldCreateTime > delayBefore:
             startTimeLapse=file
         if oldCreateTime > 0 and oldCreateTime - createTime > delayBefore:
@@ -78,7 +81,6 @@ def findTimeLapserRaw(path_f, src_amount = 1):
     return filesToTimeLapses
 
 def preparing(filesToTimeLapse,tmpDir=tmpDir):
-
     if os.path.getsize(filesToTimeLapse[0])*len(filesToTimeLapse)*1.5 > shutil.disk_usage('/tmp/').free:
         raise Exception('not enough space')
     #create tmpdir and copy images to it
@@ -100,11 +102,19 @@ def convert(tmpDir, dstPath, zeroCount):
     os.system(convertCommand)
     os.system('rm -rf '+tmpDir)
 
-
-
 if __name__ == "__main__":
-    path_f=createFullFileList(lookingForSD())
-    filesToTimeLapses=findTimeLapserRaw(path_f,2)
-    for filesToTimeLapse in filesToTimeLapses:
-        preparing(filesToTimeLapse,tmpDir)
-        convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
+    if not customPath:
+        path_f = createFullFileList(lookingForSD())
+        filesToTimeLapses = findTimeLapserRaw(path_f,1)
+        for filesToTimeLapse in filesToTimeLapses:
+            preparing(filesToTimeLapse,tmpDir)
+            convert(tmpDir,dstPath,len(str(len(filesToTimeLapse))))
+    else:
+        path_f = createFullFileList(customPath)
+        filesToTimeLapses = []
+        for d, dirs, files in os.walk(customPath):
+            for file in files:
+                filesToTimeLapses.append(customPath+file)
+        preparing(filesToTimeLapses,tmpDir)
+        convert(tmpDir,dstPath,len(str(len(filesToTimeLapses))))
+
