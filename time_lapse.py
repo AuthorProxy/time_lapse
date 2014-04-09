@@ -10,7 +10,7 @@ delayBefore=600  #10 min
 tmpDir="/tmp/.timelapse" + str(random.randint(0,100)) + "/"
 dstPath="~/Desktop/"
 quality='HD' #FullHD
-customPath="/Users/onotole/yandex.disk/foto/TRIP/bubblecamp_2014/ALL/timelapse/"
+customPath=""#/Users/onotole/yandex.disk/foto/TRIP/bubblecamp_2014/ALL/tl/"
 rate=24
 
 def lookingForSD():
@@ -52,18 +52,21 @@ def createFullFileList(path=pathSD):
 def findTimeLapserRaw(path_f, src_amount = 1):
     amount = src_amount
     oldCreateTime=0.
+    startTimeLapse=''
     for file in path_f:
+        if not startTimeLapse:
+            startTimeLapse = file
         createTime = os.path.getctime(file)
-        print(createTime, oldCreateTime, delayBefore)
+        #print (oldCreateTime, createTime, delayBefore)
         if oldCreateTime > 0 and createTime - oldCreateTime > delayBefore:
             startTimeLapse=file
         if oldCreateTime > 0 and oldCreateTime - createTime > delayBefore:
-            pass  #print (createTime, oldCreateTime, file, "smth get wrong")
+            pass
         oldCreateTime = createTime
-
+    #print(path_f)
     filesToTimeLapse=path_f[path_f.index(startTimeLapse):]
     filesToTimeLapses = [filesToTimeLapse[:]]
-    while amount > 1 :
+    while amount > 1:
         filesToTimeLapse=[]
         previousStartTimeLapse = startTimeLapse
         oldCreateTime=0.
